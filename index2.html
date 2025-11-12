@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Redirect PoC</title>
+<h3>Redirect PoC — Safe page</h3>
+<p><strong>location.href:</strong> <span id="href"></span></p>
+<p><strong>document.referrer:</strong> <span id="ref"></span></p>
+<script>
+  document.getElementById('href').textContent = location.href;
+  document.getElementById('ref').textContent = document.referrer || '[no referrer]';
+</script>
