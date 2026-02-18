@@ -1,1 +1,8 @@
-
+<script>
+fetch("https://app.lightspark.com/graphql/frontend?n=UpdateUser", {
+  method: "POST",
+  credentials: "include",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({...your payload...})
+});
+</script>
