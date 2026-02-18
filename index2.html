@@ -31,7 +31,7 @@ fetch("https://app.lightspark.com/graphql/frontend?n=UpdateUser", {
   method: "POST",
   credentials: "include",
   headers: { "Content-Type": "application/json" },
-  JSON.stringify(GRAPHQL_MUTATION) 
+  body: JSON.stringify(GRAPHQL_MUTATION) 
 });
 </script>
   </body>
